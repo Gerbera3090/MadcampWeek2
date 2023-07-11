@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:week2/question.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'user_provider.dart';
+import 'package:provider/provider.dart';
+import 'main.dart';
 
 class Tab1Page extends StatefulWidget {
   Tab1Page({Key? key}) : super(key: key);
@@ -9,26 +14,13 @@ class Tab1Page extends StatefulWidget {
 }
 
 class _Tab1PageState extends State<Tab1Page> {
-  List<String> questionList = [
-    '질문 1',
-    '질문 2',
-    '질문 3',
-    '질문 4',
-    '질문 5',
-    '질문 6',
-    '질문 7',
-    '질문 8',
-    '질문 9',
-    '질문 10',
-    '질문 11',
-    '질문 12',
-    '질문 13',
-    '질문 14',
-    '질문 15',
-  ];
+  List<String> questionList = [];
+  List<bool> liked = [];
+  List<bool> replied = [];
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: ListView.builder(
         itemCount: questionList.length,
@@ -62,6 +54,18 @@ class _Tab1PageState extends State<Tab1Page> {
                   Expanded(
                     child: Text(question),
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      // call like_question : qid uid 보내기
+                      like_question(index);
+                      // refresh tab
+                      // initState();
+                    },
+                    child: Icon(
+                      liked[index] ? Icons.favorite : Icons.favorite_border,
+                      color: liked[index] ? Colors.red : Colors.grey,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -71,19 +75,95 @@ class _Tab1PageState extends State<Tab1Page> {
       ),
     );
   }
-
   @override
   void initState() {
     super.initState();
-    // 여기서 서버에서 질문을 받아와서 questionList에 추가하는 로직을 작성합니다.
-    // 예를 들어, Future나 Stream을 사용하여 비동기로 질문을 받아올 수 있습니다.
-    // 받아온 질문을 questionList에 추가하고 setState를 호출하여 화면을 업데이트합니다.
-    // 아래는 가짜 데이터로 예시를 보여드립니다.
-    Future.delayed(Duration(seconds: 2), () {
+
+    print("새로고침!!!!!");
+
+    // 서버에서 질문을 받아오는 비동기 함수를 호출하고 받아온 질문을 questionList에 추가합니다.
+    fetchQuestions().then((questions) {
+      final List<String> questionTextList =
+          questions.map((question) => question['qText'] as String).toList();
+      final List<bool> questionLikedList =
+          questions.map((question) => question['liked'] as bool).toList();
+      final List<bool> questionRepliedList =
+          questions.map((question) => question['replied'] as bool).toList();
       setState(() {
-        questionList.add('새로운 질문 1');
-        questionList.add('새로운 질문 2');
+        questionList.clear();
+        liked.clear();
+        replied.clear();
+        questionList.addAll(questionTextList);
+        liked.addAll(questionLikedList);
+        replied.addAll(questionRepliedList);
       });
     });
+  }
+
+Future<void> like_question(int index) async {
+  final userProvider = Provider.of<UserProvider>(context, listen: false);
+  final uid = userProvider.uid;
+  final questionId = index+1;
+
+  final url = Uri.parse('$addressUrl/like_question/');
+
+  final response = await http.post(
+    url,
+    body: jsonEncode(<String, dynamic>{
+      'uid': uid,
+      'qid': questionId,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    print(response.statusCode);
+    final responseData = jsonDecode(response.body);
+    if(responseData['result'] as bool){
+      setState(() {
+        liked[index] = !liked[index];
+      });
+    }
+    // 성공적으로 데이터를 서버에 보냈을 때 처리할 로직
+  } else {
+    print(response.statusCode);
+    throw Exception('Failed to like the question');
+  }
+}
+
+  Future<List<Map<String, dynamic>>> fetchQuestions() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final uid = userProvider.uid;
+
+    final url = Uri.parse(
+        '$addressUrl/get_questions/');
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(<String, String>{
+        'uid': uid,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      final List<dynamic> questionsData = responseData['data'];
+
+      final List<Map<String, dynamic>> questions = questionsData.map((data) {
+        return {
+          'qText': data['qText'] as String,
+          'qid': data['qid'] as int,
+          'num_replies': data['num_replies'] as int,
+          'num_likedUsers': data['num_likedUsers'] as int,
+          'replied': data['replied'] as bool,
+          'liked': data['liked'] as bool,
+        };
+      }).toList();
+
+      return questions;
+      
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to fetch questions');
+    }
   }
 }

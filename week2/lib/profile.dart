@@ -91,7 +91,7 @@ class ProfileStage extends State<Profile> {
         children: [
           SizedBox(height: 16),
           GestureDetector(
-            onTap: _showOptionsDialog,
+            // onTap: _showOptionsDialog,
             child: CircleAvatar(
               radius: 64,
               backgroundImage: _selectedImage != null
