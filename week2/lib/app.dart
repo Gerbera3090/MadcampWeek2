@@ -1,6 +1,5 @@
 // app.dart
 import 'package:flutter/material.dart';
-
 import 'home_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'QFEED'),
     );
   }
 }

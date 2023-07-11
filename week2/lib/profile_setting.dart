@@ -1,24 +1,18 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///   세 번째 탭. 닉네임이랑, 자기가 댓글 단 게시물을 받아 옴. 핀 꼽기도 가능. 사진을 누르면 profile_setting.dart로 넘어감   ///
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
-import 'user_provider.dart';
 
-class Tab3Page extends StatefulWidget {
+class Profile extends StatefulWidget {
   @override
-  _Tab3PageState createState() => _Tab3PageState();
+  ProfileStage createState() => ProfileStage();
 }
 
-class _Tab3PageState extends State<Tab3Page> {
+class ProfileStage extends State<Profile> {
   File? _selectedImage;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: source);
+    final pickedImage = await picker.getImage(source: source);
 
     setState(() {
       if (pickedImage != null) {
@@ -91,35 +85,45 @@ class _Tab3PageState extends State<Tab3Page> {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = Provider.of<UserProvider>(context);
-
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 16),
-            GestureDetector(
-              onTap: _showOptionsDialog,
-              child: CircleAvatar(
-                radius: 64,
-                backgroundImage: _selectedImage != null
-                    ? FileImage(_selectedImage!) as ImageProvider<Object>?
-                    : AssetImage('assets/profile_image.jpg')
-                        as ImageProvider<Object>?, // 프로필 사진이 없으면 파란색으로 기본 프로필
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(height: 16),
+          GestureDetector(
+            // onTap: _showOptionsDialog,
+            child: CircleAvatar(
+              radius: 64,
+              backgroundImage: _selectedImage != null
+                  ? FileImage(_selectedImage!)
+                  : AssetImage('assets/profile_image.jpg') as ImageProvider<Object>?,
             ),
-            SizedBox(height: 16),
-            Text(
-              userProvider.nickName,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          SizedBox(height: 16),
+          Text(
+            '사용자 이름',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: 16),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 3,
+              children: List.generate(9, (index) {
+                return Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/post_$index.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
       ),
     );
   }
