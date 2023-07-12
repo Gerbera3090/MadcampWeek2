@@ -1,5 +1,8 @@
 # Project : Q.Feed 
 
+![logo](https://github.com/Gerbera3090/MadcampWeek2/assets/52480724/816aea13-4c35-4e40-990e-d108290fb089)
+
+
 ## A. 개발 팀원
 이정원, 권혁원
 
@@ -29,6 +32,8 @@ Database : MongoDB with pymongo
 #### 로그인 화면
 회원가입 시에 입력한 ID와 비밀번호를 입력하면 로그인 가능하다.
 
+![Screen_Recording_20230712_201917](https://github.com/Gerbera3090/MadcampWeek2/assets/52480724/0d7b1b28-6d0c-4c2b-a459-9f0f5e97eb37)
+
 ### MAIN Function
 #### Question Rounge
 > 마음에 드는 질문 둘러보기
@@ -43,6 +48,7 @@ Question에 좋아요를 달 수 있다.
 댓글을 클릭하여 이용자의 프로필로 갈 수 있다.
 
 또한 댓글을 직접 달 수 있으며, 이미 댓글을 달았을 경우 같은 버튼으로 수정할 수 있다.
+![Screen_Recording_20230712_201917](https://github.com/Gerbera3090/MadcampWeek2/assets/52480724/efbbf224-4a6e-45d7-90b7-ad790f6f7bd2)
 
 #### Profile View
 > 맘에 드는 상대의 답변들 보기!
