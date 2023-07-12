@@ -14,11 +14,11 @@ class Tab1Page extends StatefulWidget {
 }
 
 class _Tab1PageState extends State<Tab1Page> {
-  List<String> questionList = [];
-  List<bool> liked = [];
-  List<bool> replied = [];
-  List<int> num_likedUsers = [];
-  List<int> num_replies = [];
+  List<String> questionList = [];         // 질문 목록
+  List<bool> liked = [];                  // 좋아요 눌렀는지
+  List<bool> replied = [];                // 댓글 달았는지
+  List<int> num_likedUsers = [];          // 좋아요 수
+  List<int> num_replies = [];             // 댓글 수
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +178,7 @@ class _Tab1PageState extends State<Tab1Page> {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchQuestions() async {
+  Future<List<Map<String, dynamic>>> fetchQuestions() async {                 // init 시 호출되는 함수
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final uid = userProvider.uid;
 

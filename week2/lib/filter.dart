@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:week2/main_page.dart';
+import 'package:http/http.dart' as http;
+import 'package:week2/user_provider.dart';
+import 'dart:convert';
+import 'main.dart';
+import 'user_provider.dart';
+import 'package:provider/provider.dart';
 
 class FilterPage extends StatefulWidget {
   const FilterPage({Key? key}) : super(key: key);
@@ -9,21 +15,38 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-  bool isSeoulSelected = false;
-  bool isGyeonggiSelected = false;
-  bool isBusanSelected = false;
-  bool isDaejeonSelected = false;
-  bool isincheonSelected = false;
-  bool isDaeguSelected = false;
-  bool iswanjuSelected = false;
+  List<String> region = [
+    '서울',
+    '경기',
+    '부산',
+    '대전',
+    '인천',
+    '대구',
+    '완주',
+    '경상',
+  ];
 
-  bool isKoreaSelected = false;
-  bool isKAISTSelected = false;
-  bool isHanyangSelected = false;
-  bool isUNISTSelected = false;
-  bool isPostechselected = false;
-  bool isPusanSelected = false;
-  bool isSookmyungselected = false;
+  List<bool> isRegionSelected = [];
+
+  List<String> univ = [
+    '고려대',
+    '카이스트',
+    '한양대',
+    '유니스트',
+    '포스텍',
+    '부산대',
+    '숙명여대',
+  ];
+
+  List<bool> isUnivSelected = [];
+
+  @override
+  void initState() {
+    super.initState();
+    isRegionSelected = List.filled(region.length, false);
+    isUnivSelected = List.filled(univ.length, false);
+    fetchDataFromServer();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,71 +65,17 @@ class _FilterPageState extends State<FilterPage> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  FilterButton(
-                    label: '서울',
-                    isSelected: isSeoulSelected,
+                children: List.generate(region.length, (index) {
+                  return FilterButton(
+                    label: region[index],
+                    isSelected: isRegionSelected[index],
                     onTap: () {
                       setState(() {
-                        isSeoulSelected = !isSeoulSelected;
+                        isRegionSelected[index] = !isRegionSelected[index];
                       });
                     },
-                  ),
-                  FilterButton(
-                    label: '경기',
-                    isSelected: isGyeonggiSelected,
-                    onTap: () {
-                      setState(() {
-                        isGyeonggiSelected = !isGyeonggiSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '부산',
-                    isSelected: isBusanSelected,
-                    onTap: () {
-                      setState(() {
-                        isBusanSelected = !isBusanSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '대전',
-                    isSelected: isDaejeonSelected,
-                    onTap: () {
-                      setState(() {
-                        isDaejeonSelected = !isDaejeonSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '완주',
-                    isSelected: iswanjuSelected,
-                    onTap: () {
-                      setState(() {
-                        iswanjuSelected = !iswanjuSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '대구',
-                    isSelected: isDaeguSelected,
-                    onTap: () {
-                      setState(() {
-                        isDaeguSelected = !isDaeguSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '인천',
-                    isSelected: isincheonSelected,
-                    onTap: () {
-                      setState(() {
-                        isincheonSelected = !isincheonSelected;
-                      });
-                    },
-                  ),
-                ],
+                  );
+                }),
               ),
               SizedBox(height: 16),
               Text('학교 선택', style: TextStyle(fontSize: 18)),
@@ -114,89 +83,26 @@ class _FilterPageState extends State<FilterPage> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  FilterButton(
-                    label: '고려대',
-                    isSelected: isKoreaSelected,
+                children: List.generate(univ.length, (index) {
+                  return FilterButton(
+                    label: univ[index],
+                    isSelected: isUnivSelected[index],
                     onTap: () {
                       setState(() {
-                        isKoreaSelected = !isKoreaSelected;
+                        isUnivSelected[index] = !isUnivSelected[index];
                       });
                     },
-                  ),
-                  FilterButton(
-                    label: '카이스트',
-                    isSelected: isKAISTSelected,
-                    onTap: () {
-                      setState(() {
-                        isKAISTSelected = !isKAISTSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '한양대',
-                    isSelected: isHanyangSelected,
-                    onTap: () {
-                      setState(() {
-                        isHanyangSelected = !isHanyangSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '유니스트',
-                    isSelected: isUNISTSelected,
-                    onTap: () {
-                      setState(() {
-                        isUNISTSelected = !isUNISTSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '포스텍',
-                    isSelected: isPostechselected,
-                    onTap: () {
-                      setState(() {
-                        isPostechselected = !isPostechselected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '부산대',
-                    isSelected: isPusanSelected,
-                    onTap: () {
-                      setState(() {
-                        isPusanSelected = !isPusanSelected;
-                      });
-                    },
-                  ),
-                  FilterButton(
-                    label: '숙명여대',
-                    isSelected: isSookmyungselected,
-                    onTap: () {
-                      setState(() {
-                        isSookmyungselected = !isSookmyungselected;
-                      });
-                    },
-                  ),
-                ],
+                  );
+                }),
               ),
               SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () {
-                  if ((isSeoulSelected ||
-                          isGyeonggiSelected ||
-                          isBusanSelected ||
-                          isDaejeonSelected ||
-                          isincheonSelected ||
-                          isDaeguSelected ||
-                          iswanjuSelected) &&
-                      (isKoreaSelected ||
-                          isKAISTSelected ||
-                          isHanyangSelected ||
-                          isUNISTSelected ||
-                          isPostechselected ||
-                          isPusanSelected ||
-                          isSookmyungselected)) {
+                  bool isRegionSelected = this.isRegionSelected.contains(true);
+                  bool isUnivSelected = this.isUnivSelected.contains(true);
+
+                  if (isRegionSelected && isUnivSelected) {
+                    sendDataToServer();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -228,6 +134,111 @@ class _FilterPageState extends State<FilterPage> {
         ),
       ),
     );
+  }
+
+  void fetchDataFromServer() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    // 서버 URL 설정
+    String url = '${addressUrl}/get_filter/';
+
+    try {
+      // POST 요청 보내기
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'uid': userProvider.uid}),
+      );
+
+      // 응답 확인
+      if (response.statusCode == 200) {
+        print('200');
+        // 성공적으로 데이터 받아옴
+        Map<String, dynamic> responseData = jsonDecode(response.body)['data'];
+        List<String>? regionData = responseData['region'] != null
+            ? List<String>.from(responseData['region'])
+            : null;
+        List<String>? univData = responseData['univ'] != null
+            ? List<String>.from(responseData['univ'])
+            : null;
+
+        if (regionData != null) {
+          for (int i = 0; i < region.length; i++) {
+            if (regionData.contains(region[i])) {
+              setState(() {
+                isRegionSelected[i] = true;
+              });
+            }
+          }
+        } else
+        if (univData != null) {
+          for (int i = 0; i < univ.length; i++) {
+            if (univData.contains(univ[i])) {
+              setState(() {
+                isUnivSelected[i] = true;
+              });
+            }
+          }
+        }
+      } else {
+        // 요청 실패
+        print('Failed to fetch data');
+      }
+    } catch (e) {
+      // 오류 처리
+      print('Error: $e');
+    }
+  }
+
+  void sendDataToServer() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    List<String> selectedRegions = [];
+    for (int i = 0; i < region.length; i++) {
+      if (isRegionSelected[i]) {
+        selectedRegions.add(region[i]);
+      }
+    }
+
+    List<String> selectedUnivs = [];
+    for (int i = 0; i < univ.length; i++) {
+      if (isUnivSelected[i]) {
+        selectedUnivs.add(univ[i]);
+      }
+    }
+
+    Map<String, dynamic> requestData = {
+      'uid': userProvider.uid,
+      'region': selectedRegions,
+      'univ': selectedUnivs,
+    };
+
+    // 데이터를 JSON 형태로 변환
+    String jsonBody = jsonEncode(requestData);
+
+    // 서버 URL 설정
+    String url = '${addressUrl}/edit_filter/';
+
+    try {
+      // POST 요청 보내기
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonBody,
+      );
+
+      // 응답 확인
+      if (response.statusCode == 200) {
+        // 성공적으로 전송됨
+        print('Data sent successfully');
+      } else {
+        // 요청 실패
+        print('Failed to send data');
+      }
+    } catch (e) {
+      // 오류 처리
+      print('Error: $e');
+    }
   }
 }
 
