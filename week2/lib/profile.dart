@@ -20,14 +20,14 @@ class Answer {
 }
 
 class Profile extends StatefulWidget {
+  final String nickName;
   final String uid;
 
-  Profile({required this.uid});
+  Profile({required this.nickName, required this.uid});
 
   @override
   _ProfileState createState() => _ProfileState();
 }
-
 
 class _ProfileState extends State<Profile> {
   File? _selectedImage;
@@ -62,7 +62,8 @@ class _ProfileState extends State<Profile> {
       final responseData = jsonDecode(response.body);
       final postData = responseData['answerList'];
 
-      if (postData != null && postData is List<dynamic>) {          // 이게 안 됨,.,. 데이터 형식이???
+      if (postData != null && postData is List<dynamic>) {
+        // 이게 안 됨,.,. 데이터 형식이???
         print('받아오기 시작(데이터 형식 맞음)');
         final List<Answer> posts = postData.map<Answer>((data) {
           return Answer(
@@ -108,14 +109,14 @@ class _ProfileState extends State<Profile> {
               },
               child: CircleAvatar(
                 radius: 64,
-                                backgroundImage:
-                    MemoryImage(userProvider.photo!) as ImageProvider<Object>?
-// 프로필 사진이 없으면 파란색으로 기본 프로필
+                backgroundImage:
+                    MemoryImage(userProvider.photo!) as ImageProvider<Object>?,
+                // 프로필 사진이 없으면 파란색으로 기본 프로필
               ),
             ),
             SizedBox(height: 16),
             Text(
-              widget.uid,
+              widget.nickName,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -129,7 +130,8 @@ class _ProfileState extends State<Profile> {
 
                   return Container(
                     padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(8),
@@ -149,6 +151,34 @@ class _ProfileState extends State<Profile> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          sendDataToServer(userProvider.uid, widget.uid);
+        },
+        child: Icon(Icons.chat),
+      ),
     );
+  }
+
+  void sendDataToServer(String uid, String tid) async {
+    final url = Uri.parse('$addressUrl/send_chatroom/');
+
+    try {
+      final response = await http.post(
+        url,
+        body: jsonEncode(<String, String>{
+          'uid': uid,
+          'tid': tid,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Data sent successfully');
+      } else {
+        print('Failed to send data');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 }

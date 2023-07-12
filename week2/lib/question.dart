@@ -13,6 +13,8 @@ class Comment {
   int num_likes;
   String date;
   bool liked;
+  String photo_img;
+  String nickName;
 
   Comment(
       {required this.rText,
@@ -20,7 +22,10 @@ class Comment {
       this.uid = '',
       this.num_likes = 0,
       this.date = '',
-      this.liked = false});
+      this.liked = false,
+      this.photo_img = '',
+      this.nickName = '',
+      });
 }
 
 class QuestionPage extends StatefulWidget {
@@ -160,12 +165,13 @@ class _QuestionPageState extends State<QuestionPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => Profile(uid: comment.uid)),
+                          builder: (context) => Profile(nickName: comment.nickName, uid: comment.uid)),
+
                     );
                   },
                   leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/profile_image.png'),
-                  ),
+                      backgroundImage: MemoryImage(userProvider.photo!)
+                          as ImageProvider<Object>?),
                   title: comment.isEditing
                       ? TextFormField(
                           initialValue: comment.rText,
@@ -182,7 +188,7 @@ class _QuestionPageState extends State<QuestionPage> {
                             Row(
                               children: [
                                 Text(
-                                  comment.uid,
+                                  comment.nickName,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
@@ -330,6 +336,8 @@ class _QuestionPageState extends State<QuestionPage> {
             num_likes: replyData['num_likes'] as int,
             date: replyData['date'] as String? ?? '',
             liked: replyData['liked'] as bool, // liked 값 설정
+            photo_img: replyData['photo_img'] as String? ?? '',       // uid의 프로필 사진 가져오기
+            nickName: replyData['nickName'] as String? ?? '',       // uid의 프로필 사진 가져오기
           );
 
           setState(() {
