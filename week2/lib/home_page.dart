@@ -113,7 +113,8 @@ Future<bool> login(UserProvider userProvider) async {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(""),
+        leading: Image.asset('assets/qfeed_label.png'),
       ),
       body: Center(
         child: Column(
@@ -137,11 +138,11 @@ Future<bool> login(UserProvider userProvider) async {
               onPressed: () => _handleLogin(context, userProvider),
               child: const Text('로그인'),
             ),
+            // ElevatedButton(
+            //   onPressed: _handleDeveloperButton,
+            //   child: const Text('개발자 버튼'),
+            // ),
             ElevatedButton(
-              onPressed: _handleDeveloperButton,
-              child: const Text('개발자 버튼'),
-            ),
-            TextButton(
               onPressed: () {
                 Navigator.push(
                   context,
@@ -152,21 +153,21 @@ Future<bool> login(UserProvider userProvider) async {
               },
               child: const Text('회원가입'),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await viewModel.login();
-                if (viewModel.isLogined) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MainPage(),
-                    ),
-                  );
-                }
-                setState(() {});
-              },
-              child: const Text('Login with kakao'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () async {
+            //     await viewModel.login();
+            //     if (viewModel.isLogined) {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => MainPage(),
+            //         ),
+            //       );
+            //     }
+            //     setState(() {});
+            //   },
+            //   child: const Text('Login with kakao'),
+            // ),
           ],
         ),
       ),

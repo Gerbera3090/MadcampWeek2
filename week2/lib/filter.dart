@@ -53,6 +53,7 @@ class _FilterPageState extends State<FilterPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Filter'),
+        leading: Image.asset('assets/qfeed_label.png'),
       ),
       body: SingleChildScrollView(
         child: Padding(

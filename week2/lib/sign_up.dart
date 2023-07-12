@@ -156,6 +156,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('회원가입'),
+        leading: Image.asset('assets/qfeed_label.png'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
