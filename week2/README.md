@@ -1,16 +1,80 @@
-# week2
+# Project : Q.Feed 
 
-A new Flutter project.
+## A. 개발 팀원
+이정원, 권혁원
 
-## Getting Started
+## B. 사용 언어
+Frontend : Flutter
+BackEnd : Django
+Database : MongoDB with pymongo
 
-This project is a starting point for a Flutter application.
+## C. 사용 목적
+> Question + Feed + Cupid
+이성이 만나는 방법에는 여러 가지 방법이 있다.
+첫 눈에 반할 수도 있고, 특정한 계기가 사랑에 빠지는 계기가 될 수 있다.
 
-A few resources to get you started if this is your first Flutter project:
+혹은 같이 지내다 보며 가치관이 잘 맞고 말이 잘 통하는 상대에게 스며들 수도 있다.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+인간 관계에서 가장 중요한 것은 서로의 가치관이다.
+단순간에 파악하기 어렵고, 선뜻 너무 진지해질 까봐 먼저 이야기하기 어려운 질문들.
+하지만 함께 해나가기에는 너무나도 필수적인 질문들에 먼저 답변하고, 그 답변을 둘러 보며, 괜찮은 사람을 만날 수 있는 기회를 제공한다.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## D. Application 소개
+### Start
+> 로그인과 회원가입
+#### 회원 가입
+닉네임, ID, Password, 이름, 전화번호, 학교, 거주지를 입력하면 회원가입이 가능하다.
+회원가입 중 학교와 거주지는 필터링에 이용된다.
+
+#### 로그인 화면
+회원가입 시에 입력한 ID와 비밀번호를 입력하면 로그인 가능하다.
+
+### MAIN Function
+#### Question Rounge
+> 마음에 드는 질문 둘러보기
+준비된 Question들을 둘러 볼 수 있다.
+각 질문별로 좋아요 수와 댓글 수를 통해, 인기있고 hot 한 질문들을 볼 수 있다.
+Question에 좋아요를 달 수 있다.
+
+#### Reply Rounge
+> 마음에 드는 댓글 찾기!
+각 질문에 사용자들이 답한 댓글들을 둘러 볼 수 있다.
+각 댓글은 프로필에서 설정한 필터링 설정에 맞는 이용자의 댓글만 볼 수 있다.
+댓글을 클릭하여 이용자의 프로필로 갈 수 있다.
+
+또한 댓글을 직접 달 수 있으며, 이미 댓글을 달았을 경우 같은 버튼으로 수정할 수 있다.
+
+#### Profile View
+> 맘에 드는 상대의 답변들 보기!
+댓글을 눌러 상대방의 프로필을 볼 수 있다.
+상대방의 프로필에는 사진, 닉네임, 그리고 지금까지 답한 질문과 그 답변을 볼 수 있다.
+아래 있는 버튼을 눌러, 상대방과의 대화를 시작할 수 있다.
+
+#### Chatting Rounge
+> 마음에 든 상대와 대화하기!
+
+프로필에서 대화하기를 누른 상대방과 대화를 이어나갈 수 있다.
+각 사용자별로 닉네임, 마지막 대화, 상대가 마지막으로 남긴 메시지 수를 확인할 수 있다.
+
+#### Chat Rounge
+사용자를 누르면, 대화를 이어나갈 수 있다.
+보낸 시간과 대화, 닉네임을 확인할 수 있다.
+메시지 보내기 기능을 통해 상대방에게 메시지를 보낼 수 있다.
+
+#### Profile Tab
+> 내 답변들 확인하기!
+
+지금까지 자신이 답변했던 내용을 확인할 수 있다.
+질문과 답변을 확인할 수 있다.
+
+#### Setting page
+프로필 사진을 눌러 자신의 프로필을 설정할 수 있다.
+특히, 필터 설정을 통해 자신이 만나고 싶은 사람만 걸러 댓글을 확인할 수 있다.
+
+
+
+
+
+
+
+
