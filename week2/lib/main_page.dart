@@ -15,7 +15,8 @@ class MainPage extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('QFEED'),
+            title: const Text(''),
+            leading: Image.asset('assets/qfeed_label.png'),
             bottom: TabBar(
               indicatorColor: Colors.blue,
               tabs: [

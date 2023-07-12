@@ -38,6 +38,7 @@ class QuestionPage extends StatefulWidget {
   @override
   _QuestionPageState createState() => _QuestionPageState();
 }
+
 class _QuestionPageState extends State<QuestionPage> {
   List<Comment> comments = [];
   final commentController = TextEditingController();
@@ -91,19 +92,29 @@ class _QuestionPageState extends State<QuestionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('# ${widget.formattedIndex}'),
+        leading: Image.asset('assets/qfeed_label.png'),
       ),
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              widget.question,
-              style: TextStyle(fontSize: 24),
+            child: SizedBox(
+              width: double.infinity, // 부모의 가로 크기에 맞추기 위해
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  //border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                  color: Color(0xFFFFD6D6),
+                ),
+                child: Text(
+                  widget.question,
+                  style: TextStyle(fontSize: 24),
+                  textAlign: TextAlign.center, // 텍스트를 가운데 정렬합니다.
+                  softWrap: true,   
+                  overflow: TextOverflow.visible,
+                ),
+              ),
             ),
           ),
           Row(
@@ -115,7 +126,7 @@ class _QuestionPageState extends State<QuestionPage> {
               ),
               SizedBox(width: 4),
               Text(
-                '${widget.numLikedUsers} 개',        // 좋아요 개수
+                '${widget.numLikedUsers} 개', // 좋아요 개수
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
@@ -135,7 +146,8 @@ class _QuestionPageState extends State<QuestionPage> {
                 ),
               ),
             ],
-          ),          Expanded(
+          ),
+          Expanded(
             child: ListView.builder(
               itemCount: comments.length,
               itemBuilder: (context, index) {
@@ -147,7 +159,8 @@ class _QuestionPageState extends State<QuestionPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Profile(uid: comment.uid)),
+                      MaterialPageRoute(
+                          builder: (context) => Profile(uid: comment.uid)),
                     );
                   },
                   leading: CircleAvatar(
@@ -213,7 +226,9 @@ class _QuestionPageState extends State<QuestionPage> {
                           likeComment(index);
                         },
                         child: Icon(
-                          comment.liked ? Icons.favorite : Icons.favorite_border,
+                          comment.liked
+                              ? Icons.favorite
+                              : Icons.favorite_border,
                           color: comment.liked ? Colors.red : Colors.grey,
                         ),
                       ),

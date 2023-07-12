@@ -46,8 +46,9 @@ class _Tab1PageState extends State<Tab1Page> {
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: Colors.white),
                 borderRadius: BorderRadius.circular(8),
+                color: Color(0xFFFFD6D6),
               ),
               child: Row(
                 children: [
