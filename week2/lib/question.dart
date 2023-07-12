@@ -12,29 +12,32 @@ class Comment {
   String uid;
   int num_likes;
   String date;
+  bool liked;
 
   Comment(
       {required this.rText,
       this.isEditing = false,
       this.uid = '',
       this.num_likes = 0,
-      this.date = ''});
+      this.date = '',
+      this.liked = false});
 }
 
 class QuestionPage extends StatefulWidget {
   final String question;
   final int formattedIndex;
+  final int numLikedUsers;
 
   const QuestionPage({
     Key? key,
     required this.question,
     required this.formattedIndex,
+    required this.numLikedUsers,
   }) : super(key: key);
 
   @override
   _QuestionPageState createState() => _QuestionPageState();
 }
-
 class _QuestionPageState extends State<QuestionPage> {
   List<Comment> comments = [];
   final commentController = TextEditingController();
@@ -103,7 +106,36 @@ class _QuestionPageState extends State<QuestionPage> {
               style: TextStyle(fontSize: 24),
             ),
           ),
-          Expanded(
+          Row(
+            children: [
+              SizedBox(width: 16),
+              Icon(
+                Icons.favorite,
+                color: Colors.red,
+              ),
+              SizedBox(width: 4),
+              Text(
+                '${widget.numLikedUsers} 개',        // 좋아요 개수
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(width: 16),
+              Icon(
+                Icons.comment,
+                color: Colors.grey,
+              ),
+              SizedBox(width: 4),
+              Text(
+                '${comments.length} 개',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),          Expanded(
             child: ListView.builder(
               itemCount: comments.length,
               itemBuilder: (context, index) {
@@ -115,7 +147,7 @@ class _QuestionPageState extends State<QuestionPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Profile()),
+                      MaterialPageRoute(builder: (context) => Profile(uid: comment.uid)),
                     );
                   },
                   leading: CircleAvatar(
@@ -176,18 +208,15 @@ class _QuestionPageState extends State<QuestionPage> {
                             _showDeleteDialog(index);
                           },
                         ),
-                                          GestureDetector(
-                    onTap: () {
-                      // call like_question : qid uid 보내기
-                     // like_question(index);
-                      // refresh tab
-                      // initState();
-                    },
-                    child: Icon(Icons.favorite_border
-                      // liked[index] ? Icons.favorite : Icons.favorite_border,
-                      // color: liked[index] ? Colors.red : Colors.grey,
-                    ),
-                  ),
+                      GestureDetector(
+                        onTap: () {
+                          likeComment(index);
+                        },
+                        child: Icon(
+                          comment.liked ? Icons.favorite : Icons.favorite_border,
+                          color: comment.liked ? Colors.red : Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -226,6 +255,37 @@ class _QuestionPageState extends State<QuestionPage> {
     );
   }
 
+  Future<void> likeComment(int index) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    final url = Uri.parse('$addressUrl/like_reply/');
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(<String, dynamic>{
+        'uid': userProvider.uid,
+        'qid': widget.formattedIndex,
+        'tid': comments[index].uid,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+
+      final responseData = jsonDecode(response.body);
+      final updatedNumLikes = responseData['num_likes'] as int;
+      // final liked = responseData['liked'] as bool;
+
+      setState(() {
+        comments[index].num_likes = updatedNumLikes;
+        comments[index].liked = !comments[index].liked;
+      });
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to like comment');
+    }
+  }
+
   Future<void> fetchComments(int index) async {
     // 댓글 받아오기
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -249,14 +309,13 @@ class _QuestionPageState extends State<QuestionPage> {
         final replyList = responseData['replyList'] as List<dynamic>;
         for (final replyData in replyList) {
           final Comment newComment = Comment(
-              rText: replyData['rText'] as String? ?? '', // 댓글의 텍스트 받아오기
-              isEditing: false,
-              uid: replyData['uid'] as String? ?? '', // 댓글의 uid 받아오기
-              num_likes: replyData['num_likes'] as int,
-              date: replyData['date'] as String? ?? '');
-
-          print('자 출력한다!!!');
-          print(newComment.rText);
+            rText: replyData['rText'] as String? ?? '', // 댓글의 텍스트 받아오기
+            isEditing: false,
+            uid: replyData['uid'] as String? ?? '', // 댓글의 uid 받아오기
+            num_likes: replyData['num_likes'] as int,
+            date: replyData['date'] as String? ?? '',
+            liked: replyData['liked'] as bool, // liked 값 설정
+          );
 
           setState(() {
             comments.add(newComment); // 댓글 받아와서 다 추가하기

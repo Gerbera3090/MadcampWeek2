@@ -8,6 +8,7 @@ import 'sign_up.dart';
 import 'kakao_login.dart';
 import 'user_provider.dart';
 import 'main.dart';
+import 'dart:typed_data';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -24,50 +25,53 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<bool> login(UserProvider userProvider) async {
-    final uid = _usernameController.text;
-    final password = _passwordController.text;
+Future<bool> login(UserProvider userProvider) async {
+  final uid = _usernameController.text;
+  final password = _passwordController.text;
 
-    final url = Uri.parse('$addressUrl/login/');
+  final url = Uri.parse('$addressUrl/login/');
 
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, String>{
-        'uid': uid,
-        'password': password,
-      }),
-    );
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(<String, String>{
+      'uid': uid,
+      'password': password,
+    }),
+  );
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      final bool loginSuccess = responseData['result'] as bool;
+  if (response.statusCode == 200) {
+    final responseData = jsonDecode(response.body);
+    final bool loginSuccess = responseData['result'] as bool;
 
-      if (loginSuccess) {
-        final String nickName = responseData['nickName'] as String;
-        userProvider.setNickName(nickName); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String uid = responseData['uid'] as String;
-        userProvider.setUid(uid); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String password = responseData['password'] as String;
-        userProvider.setPassword(password); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String name = responseData['name'] as String;
-        userProvider.setName(name); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String univ = responseData['univ'] as String;
-        userProvider.setUniv(univ); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String region = responseData['region'] as String;
-        userProvider.setRegion(region); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-        final String phoneNumber = responseData['phoneNumber'] as String;
-        userProvider.setPhoneNumber(phoneNumber); // 로그인 성공 시, UserProvider에 사용자 정보 설정
-      }
-
-      return loginSuccess;
-    } else {
-      print('Request failed with status: ${response.statusCode}');
-      return false;
+    if (loginSuccess) {
+      final String nickName = responseData['nickName'] as String;
+      userProvider.setNickName(nickName); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String uid = responseData['uid'] as String;
+      userProvider.setUid(uid); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String password = responseData['password'] as String;
+      userProvider.setPassword(password); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String name = responseData['name'] as String;
+      userProvider.setName(name); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String univ = responseData['univ'] as String;
+      userProvider.setUniv(univ); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String region = responseData['region'] as String;
+      userProvider.setRegion(region); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final String phoneNumber = responseData['phoneNumber'] as String;
+      userProvider.setPhoneNumber(phoneNumber); // 로그인 성공 시, UserProvider에 사용자 정보 설정
+      final photo = responseData['profile_img'];
+      userProvider.setPhoto(photo);
     }
+
+    return loginSuccess;
+  } else {
+    print('Request failed with status: ${response.statusCode}');
+    return false;
   }
+}
+
 
   void _handleLogin(BuildContext context, UserProvider userProvider) async {
     final bool isLoggedIn = await login(userProvider);
