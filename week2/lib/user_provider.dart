@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class UserProvider with ChangeNotifier {
   String _nickName = '';
@@ -13,6 +15,7 @@ class UserProvider with ChangeNotifier {
   String _kakaoEmail = '';
   String _googleEmail = '';
   bool _liked = false;
+  Uint8List? photo; // 이미지 데이터를 저장할 필드
 
   String get nickName => _nickName;
   String get uid => _uid;
@@ -81,6 +84,12 @@ class UserProvider with ChangeNotifier {
 
   void toggleLiked() {
     _liked = !_liked;
+    notifyListeners();
+  }
+  
+  void setPhoto(String base64String) {
+    final decodedBytes = base64Decode(base64String);
+    photo = Uint8List.fromList(decodedBytes);
     notifyListeners();
   }
 }

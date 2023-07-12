@@ -1,12 +1,23 @@
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///   세 번째 탭. 닉네임이랑, 자기가 댓글 단 게시물을 받아 옴. 핀 꼽기도 가능. 사진을 누르면 profile_setting.dart로 넘어감   ///
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'user_provider.dart';
+import 'profile_setting.dart';
+import 'dart:io';
+import 'main.dart';
+
+class Answer {
+  final int qid;
+  final String qText;
+  final String rText;
+
+  Answer({
+    required this.qid,
+    required this.qText,
+    required this.rText,
+  });
+}
 
 class Tab3Page extends StatefulWidget {
   @override
@@ -15,79 +26,65 @@ class Tab3Page extends StatefulWidget {
 
 class _Tab3PageState extends State<Tab3Page> {
   File? _selectedImage;
+  List<Answer> answerList = []; // 댓글 단 게시물 리스트
 
-  Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.pickImage(source: source);
+  @override
+  void initState() {
+    super.initState();
+    fetchPosts(); // 서버에서 댓글 단 게시물을 받아오는 함수 호출
+    print('프로필 들어옴');
+  }
 
-    setState(() {
-      if (pickedImage != null) {
-        _selectedImage = File(pickedImage.path);
+  Future<void> fetchPosts() async {
+    print('게시글 불러올 거임');
+
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final uid = userProvider.uid;
+    final password = userProvider.password;
+
+    final url = Uri.parse('$addressUrl/login/');
+
+    final response = await http.post(
+      url,
+      body: jsonEncode(<String, String>{
+        'uid': uid,
+        'password': password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print('받아오겠음');
+
+      final responseData = jsonDecode(response.body);
+      final postData = responseData['answerList'];
+
+      if (postData != null && postData is List<dynamic>) {          // 이게 안 됨,.,. 데이터 형식이???
+        print('받아오기 시작(데이터 형식 맞음)');
+        final List<Answer> posts = postData.map<Answer>((data) {
+          return Answer(
+            qid: data['qid'] as int,
+            qText: data['qText'] as String,
+            rText: data['rText'] as String,
+          );
+        }).toList();
+
+        print('잘 받아왓다');
+        print('qid');
+        print('qText');
+        print('rText');
+
+        setState(() {
+          answerList.clear();
+          answerList.addAll(posts);
+        });
       }
-    });
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to fetch user posts');
+    }
   }
 
-  Future<void> _pickImageFromGallery() async {
-    await _pickImage(ImageSource.gallery);
-  }
-
-  Future<void> _pickImageFromCamera() async {
-    await _pickImage(ImageSource.camera);
-  }
-
-  Future<void> _showOptionsDialog() async {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('프로필 사진 변경'),
-        content: Text('수정 또는 삭제할까요?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _showImagePickerDialog();
-              Navigator.pop(context);
-            },
-            child: Text('수정'),
-          ),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _selectedImage = null;
-              });
-              Navigator.pop(context);
-            },
-            child: Text('삭제'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _showImagePickerDialog() {
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('사진 가져오기'),
-        content: Text('사진을 가져올 방법을 선택하세요.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _pickImageFromGallery();
-              Navigator.pop(context);
-            },
-            child: Text('갤러리'),
-          ),
-          TextButton(
-            onPressed: () {
-              _pickImageFromCamera();
-              Navigator.pop(context);
-            },
-            child: Text('카메라'),
-          ),
-        ],
-      ),
-    );
-  }
+  // 나머지 코드 생략...
 
   @override
   Widget build(BuildContext context) {
@@ -101,13 +98,15 @@ class _Tab3PageState extends State<Tab3Page> {
           children: [
             SizedBox(height: 16),
             GestureDetector(
-              onTap: _showOptionsDialog,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileSetting()),
+                );
+              },
               child: CircleAvatar(
                 radius: 64,
-                backgroundImage: _selectedImage != null
-                    ? FileImage(_selectedImage!) as ImageProvider<Object>?
-                    : AssetImage('assets/profile_image.jpg')
-                        as ImageProvider<Object>?, // 프로필 사진이 없으면 파란색으로 기본 프로필
+                backgroundImage: MemoryImage(userProvider.photo!) as ImageProvider<Object>?
               ),
             ),
             SizedBox(height: 16),
@@ -116,6 +115,31 @@ class _Tab3PageState extends State<Tab3Page> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: answerList.length,
+                itemBuilder: (context, index) {
+                  final post = answerList[index];
+
+                  return Container(
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('# ${post.qid}'),
+                        Text('Q. ${post.qText}'),
+                        Text('A. ${post.rText}'),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
           ],
